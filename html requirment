@@ -1,0 +1,43 @@
+create html file with file manager function
+
+file manager web page
+Core File Operations
+Browse directories: Navigate folders and see directory structures.
+View files: List files with details (name, size, type, modified date, etc.).
+Upload files: Upload one or multiple files to the server.
+Download files: Download individual or multiple files (optionally as zip).
+Create folder: Make new directories.
+Rename: Change file or folder names.
+Delete: Remove files or folders (with confirmation).
+Move/Copy: Move or copy files/folders to other locations.
+Drag & Drop: Support drag-and-drop for upload and reorganization.
+Advanced/Optional Features
+Preview files: Inline preview for images, documents, videos, etc.
+Edit files: Built-in text/code editor for editable file types.
+Search: Search for files or folders by name, type, content, etc.
+Sorting: Sort files by name, size, type, date, etc.
+Bulk actions: Select multiple files/folders for batch operations (delete, move, download).
+Security & User Management
+Authentication: Login system to restrict access.
+User permissions: Role-based access (read, write, admin, etc.).
+Access logging: Audit who accessed or modified files.
+Sharing & Collaboration
+Share links: Generate shareable links for files/folders (optionally with expiry).
+Public/private sharing: Control who can access shared links.
+Comments/notes: Leave comments or notes on files (optional).
+UI/UX Enhancements
+Breadcrumbs: Show current path and allow easy navigation.
+Context menus: Right-click actions for files/folders.
+Progress bars: Upload/download progress indicators.
+Responsive design: Mobile and desktop compatibility.
+Optional Integrations
+Cloud storage: Integrate with S3, Google Drive, Dropbox, etc.
+Versioning: Keep old versions of files.
+Recycle bin: Temporary storage for deleted items.
+Example: Basic File Manager Function List
+List files and folders
+Upload, download, delete, rename, move, copy
+Create new folders
+File/folder search and sort
+User authentication
+Share files/folders via link
