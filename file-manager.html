@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web File Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Icons (Font Awesome CDN for icons, optional but useful) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #263159;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    .user-info {
+      font-size: 1rem;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 1.5rem;
+    }
+    .breadcrumbs {
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      color: #263159;
+    }
+    .breadcrumbs a {
+      color: #263159;
+      text-decoration: none;
+    }
+    .breadcrumbs a:hover {
+      text-decoration: underline;
+    }
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .toolbar button, .toolbar label {
+      background: #435585;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .toolbar button:hover, .toolbar label:hover {
+      background: #263159;
+    }
+    .toolbar input[type="file"] {
+      display: none;
+    }
+    .search-bar {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .search-bar input {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 0.4rem 0.7rem;
+      font-size: 1rem;
+      min-width: 180px;
+    }
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+    }
+    .file-table th, .file-table td {
+      text-align: left;
+      padding: 0.75rem 0.5rem;
+    }
+    .file-table th {
+      background: #f1f3f6;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    .file-table th .sort-arrow {
+      font-size: 0.8em;
+      margin-left: 2px;
+    }
+    .file-table tr {
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      transition: background 0.15s;
+    }
+    .file-table tr.selected {
+      background: #e2eafc;
+    }
+    .file-table tr:hover {
+      background: #f5f6fa;
+    }
+    .file-table td {
+      vertical-align: middle;
+    }
+    .actions {
+      display: flex;
+      gap: 0.5em;
+    }
+    .actions button {
+      background: none;
+      border: none;
+      color: #263159;
+      cursor: pointer;
+      font-size: 1.1em;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      transition: background 0.1s;
+    }
+    .actions button:hover {
+      background: #eef2fb;
+    }
+    .progress-bar {
+      width: 100%;
+      background: #f3f3f3;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 10px 0;
+      height: 18px;
+      display: none;
+    }
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      background: #435585;
+      transition: width 0.3s;
+      color: #fff;
+      text-align: center;
+      line-height: 18px;
+      font-size: 0.95em;
+    }
+    .preview-modal, .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      display: none;
+    }
+    .modal-content, .preview-content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      min-width: 320px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+      position: relative;
+    }
+    .modal-content .close, .preview-content .close {
+      position: absolute;
+      top: 0.8em;
+      right: 1em;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #263159;
+      background: none;
+      border: none;
+    }
+    .login-modal {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-form {
+      background: #fff;
+      padding: 2rem 2.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+      min-width: 340px;
+    }
+    .login-form h2 {
+      margin-top: 0;
+    }
+    .login-form input, .login-form select {
+      width: 100%;
+      padding: 0.6rem;
+      margin: 0.5rem 0 1rem 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .login-form button {
+      width: 100%;
+      background: #263159;
+      color: #fff;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 4px;
+      padding: 0.7rem 0;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    @media (max-width: 700px) {
+      .container {
+        padding: 0.5rem;
+      }
+      .modal-content, .preview-content {
+        padding: 1rem;
+        min-width: 90vw;
+      }
+      .login-form {
+        padding: 1rem;
+        min-width: 90vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fa-solid fa-folder-open"></i> File Manager</h1>
+    <div class="user-info">
+      <span id="userRole"></span>
+      <button id="logoutBtn" style="display:none;margin-left:1em;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </header>
+  <div class="container" id="mainContainer" style="display:none;">
+    <nav class="breadcrumbs" id="breadcrumbs"></nav>
+    <div class="toolbar">
+      <button id="newFolderBtn"><i class="fa-solid fa-folder-plus"></i> New Folder</button>
+      <label>
+        <i class="fa-solid fa-upload"></i> Upload
+        <input type="file" id="uploadInput" multiple>
+      </label>
+      <button id="downloadBtn" disabled><i class="fa-solid fa-download"></i> Download</button>
+      <button id="deleteBtn" disabled><i class="fa-solid fa-trash"></i> Delete</button>
+      <button id="moveBtn" disabled><i class="fa-solid fa-arrows-left-right"></i> Move</button>
+      <button id="copyBtn" disabled><i class="fa-solid fa-copy"></i> Copy</button>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search files/folders...">
+        <button id="searchBtn"><i class="fa-solid fa-search"></i></button>
+      </div>
+    </div>
+    <div class="progress-bar" id="progressBar"><span id="progressBarFill" style="width:0%">0%</span></div>
+    <table class="file-table" id="fileTable">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="selectAll"></th>
+          <th>Name <span class="sort-arrow" id="sortName"></span></th>
+          <th>Type <span class="sort-arrow" id="sortType"></span></th>
+          <th>Size <span class="sort-arrow" id="sortSize"></span></th>
+          <th>Modified <span class="sort-arrow" id="sortDate"></span></th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="fileTableBody">
+        <!-- Files and folders will be dynamically inserted here -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal login-modal" id="loginModal" style="display:flex;">
+    <form class="login-form" id="loginForm" autocomplete="off">
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option value="admin">Admin</option>
+        <option value="write">Write</option>
+        <option value="read">Read</option>
+      </select>
+      <button type="submit">Sign In</button>
+      <div id="loginMsg" style="color:#e74c3c;margin-top:0.5em;min-height:1.2em;"></div>
+    </form>
+  </div>
+  <div class="modal" id="modal">
+    <div class="modal-content" id="modalContent">
+      <button class="close" onclick="closeModal()">&times;</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+  <div class="preview-modal" id="previewModal">
+    <div class="preview-content" id="previewContent">
+      <button class="close" onclick="closePreview()">&times;</button>
+      <div id="previewBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // ------------- Demo Data & Auth -----------------
+    const DEMO_FILES = [
+      {name: "Documents", type: "folder", size: "-", date: "2025-06-15 10:00", children: [
+        {name: "Resume.pdf", type: "pdf", size: "120 KB", date: "2025-06-10 13:12"},
+        {name: "Notes.txt", type: "txt", size: "4 KB", date: "2025-06-14 17:22"}
+      ]},
+      {name: "Photos", type: "folder", size: "-", date: "2025-06-11 09:50", children: [
+        {name: "Vacation.jpg", type: "jpg", size: "2.1 MB", date: "2025-06-09 20:34"},
+        {name: "Birthday.png", type: "png", size: "1.3 MB", date: "2025-06-12 16:12"}
+      ]},
+      {name: "Presentation.pptx", type: "pptx", size: "3.2 MB", date: "2025-06-16 11:08"},
+      {name: "Music.mp3", type: "mp3", size: "5.7 MB", date: "2025-06-17 21:40"}
+    ];
+    const USERS = {
+      "admin": {password: "admin123", role: "admin"},
+      "writer": {password: "write123", role: "write"},
+      "reader": {password: "read123", role: "read"}
+    };
+    let currentUser = null;
+
+    // -------------------- Authentication -----------
+    function showLogin(msg="") {
+      document.getElementById("loginModal").style.display = "flex";
+      document.getElementById("mainContainer").style.display = "none";
+      document.getElementById("loginMsg").innerText = msg;
+    }
+    function hideLogin() {
+      document.getElementById("loginModal").style.display = "none";
+      document.getElementById("mainContainer").style.display = "block";
+    }
+    document.getElementById("loginForm").onsubmit = function(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const role = document.getElementById("role").value;
+      if (USERS[username] && USERS[username].password === password && USERS[username].role === role) {
+        currentUser = {username, role};
+        sessionStorage.setItem("filemgr_user", JSON.stringify(currentUser));
+        hideLogin();
+        initFileManager();
+      } else {
+        showLogin("Invalid credentials or role!");
+      }
+    };
+    document.getElementById("logoutBtn").onclick = function() {
+      sessionStorage.removeItem("filemgr_user");
+      currentUser = null;
+      showLogin();
+    };
+
+    // ------------- File Manager State & Rendering -------------
+    let fileTree = JSON.parse(JSON.stringify(DEMO_FILES));
+    let currentPath = [];
+    let sortField = "name";
+    let sortAsc = true;
+    let selected = new Set();
+
+    function initFileManager() {
+      document.getElementById("userRole").innerHTML = `<i class="fa-solid fa-user"></i> <b>${currentUser.username}</b> (${currentUser.role})`;
+      document.getElementById("logoutBtn").style.display = "inline-block";
+      renderBreadcrumbs();
+      renderFileTable();
+      updateToolbar();
+    }
+
+    // Breadcrumbs
+    function renderBreadcrumbs() {
+      let crumbs = [`<a href="#" onclick="navigateTo([]);return false;"><i class="fa-solid fa-house"></i> Home</a>`];
+      currentPath.forEach((folder, idx) => {
+        crumbs.push(`<a href="#" onclick="navigateTo(${JSON.stringify(currentPath.slice(0,idx+1))});return false;">${folder}</a>`);
+      });
+      document.getElementById("breadcrumbs").innerHTML = crumbs.join(" <i class='fa-solid fa-angle-right'></i> ");
+    }
+
+    // Helper: get files at current path
+    function getCurrentFiles() {
+      let files = fileTree, ptr = null;
+      for (let folder of currentPath) {
+        ptr = files.find(f => f.type === "folder" && f.name === folder);
+        if (!ptr) return [];
+        files = ptr.children || [];
+      }
+      return files;
+    }
+
+    // File Table Rendering
+    function renderFileTable() {
+      let files = getCurrentFiles();
+      // Search filter
+      const searchVal = document.getElementById("searchInput").value.trim().toLowerCase();
+      if (searchVal) {
+        files = files.filter(f => f.name.toLowerCase().includes(searchVal));
+      }
+      // Sort
+      files = files.slice().sort((a,b) => {
+        let x = a[sortField] || "", y = b[sortField] || "";
+        if (sortField === "size") {
+          // Parse size for sorting (simple, demo)
+          const parseSize = s => {
+            if (s === "-") return 0;
+            let m = s.match(/([\d.]+)\s*([KMG]?B)/i);
+            if (!m) return 0;
+            let n = parseFloat(m[1]);
+            let unit = m[2].toUpperCase();
+            if (unit === "KB") n *= 1e3;
+            if (unit === "MB") n *= 1e6;
+            if (unit === "GB") n *= 1e9;
+            return n;
+          };
+          x = parseSize(x); y = parseSize(y);
+        }
+        if (sortField === "date") {
+          x = new Date(x); y = new Date(y);
+        }
+        if (x < y) return sortAsc ? -1 : 1;
+        if (x > y) return sortAsc ? 1 : -1;
+        return 0;
+      });
+      // Rows
+      let rows = files.map((f, idx) => {
+        let icon = f.type === "folder" ? "fa-folder" :
+          (f.type === "jpg" || f.type === "png" || f.type === "gif") ? "fa-file-image" :
+          (f.type === "pdf") ? "fa-file-pdf" :
+          (f.type === "mp3" || f.type === "wav") ? "fa-file-audio" :
+          (f.type === "mp4" || f.type === "avi") ? "fa-file-video" :
+          (f.type === "txt" || f.type === "md" || f.type === "js" || f.type === "html") ? "fa-file-lines" :
+          "fa-file";
+        let checked = selected.has(f.name) ? "checked" : "";
+        return `<tr${selected.has(f.name)?" class='selected'":""}>
+          <td><input type="checkbox" class="rowSelect" data-name="${f.name}" ${checked}></td>
+          <td>
+            <i class="fa-solid ${icon}" style="margin-right:4px;color:${f.type==="folder"?"#435585":"#666"}"></i>
+            ${f.type==="folder"
+              ? `<a href="#" onclick="openFolder('${f.name}');return false;">${f.name}</a>`
+              : `<span class="file-link" ondblclick="previewFile('${f.name}')">${f.name}</span>`
+            }
+          </td>
+          <td>${f.type}</td>
+          <td>${f.size}</td>
+          <td>${f.date}</td>
+          <td class="actions">
+            ${f.type !== "folder"
+              ? `<button title="Preview" onclick="previewFile('${f.name}')"><i class="fa-solid fa-eye"></i></button>
+                 <button title="Edit" onclick="editFile('${f.name}')"><i class="fa-solid fa-pen-to-square"></i></button>`
+              : ""}
+            <button title="Rename" onclick="renameFile('${f.name}')"><i class="fa-solid fa-i-cursor"></i></button>
+            <button title="Share" onclick="shareFile('${f.name}')"><i class="fa-solid fa-share-nodes"></i></button>
+          </td>
+        </tr>`;
+      }).join("");
+      document.getElementById("fileTableBody").innerHTML = rows || `<tr><td colspan="6" style="text-align:center;color:#bbb;">No files or folders</td></tr>`;
+      // Select all
+      document.getElementById("selectAll").checked = files.length && files.every(f => selected.has(f.name));
+    }
+
+    // Toolbar Enable/Disable
+    function updateToolbar() {
+      let canWrite = currentUser.role === "admin" || currentUser.role === "write";
+      let selCount = selected.size;
+      document.getElementById("newFolderBtn").disabled = !canWrite;
+      document.getElementById("uploadInput").disabled = !canWrite;
+      document.getElementById("downloadBtn").disabled = selCount === 0;
+      document.getElementById("deleteBtn").disabled = !(canWrite && selCount > 0);
+      document.getElementById("moveBtn").disabled = !(canWrite && selCount > 0);
+      document.getElementById("copyBtn").disabled = selCount === 0;
+    }
+
+    // ---------------- Events ------------------
+    // Sort
+    ["Name","Type","Size","Date"].forEach((field) => {
+      let id = "sort" + field;
+      document.getElementById(id).onclick = () => {
+        let f = field.toLowerCase();
+        if (sortField === f) sortAsc = !sortAsc;
+        else { sortField = f; sortAsc = true; }
+        renderFileTable();
+      };
+    });
+    // Select All
+    document.getElementById("selectAll").onchange = function() {
+      let files = getCurrentFiles();
+      if (this.checked)
+        files.forEach(f => selected.add(f.name));
+      else
+        files.forEach(f => selected.delete(f.name));
+      renderFileTable();
+      updateToolbar();
+    };
+    // Row Select
+    document.addEventListener("change", function(e) {
+      if (e.target.classList.contains("rowSelect")) {
+        let name = e.target.dataset.name;
+        if (e.target.checked) selected.add(name);
+        else selected.delete(name);
+        updateToolbar();
+      }
+    });
+    // Search
+    document.getElementById("searchBtn").onclick = function() {
+      renderFileTable();
+    };
+    document.getElementById("searchInput").oninput = function(e) {
+      renderFileTable();
+    };
+
+    // ------------- File/Folder Actions (Demo) -----------
+    function openFolder(name) {
+      currentPath.push(name);
+      selected.clear();
+      renderBreadcrumbs();
+      renderFileTable();
+      updateToolbar();
+    }
+    function navigateTo(path) {
+      currentPath = path.slice();
+      selected.clear();
+      renderBreadcrumbs();
+      renderFileTable();
+      updateToolbar();
+    }
+    function previewFile(name) {
+      let file = getCurrentFiles().find(f => f.name === name);
+      let html = `<h3><i class="fa-solid fa-eye"></i> Preview: ${file.name}</h3>`;
+      if (["jpg","png","gif"].includes(file.type))
+        html += `<img src="https://via.placeholder.com/400x250?text=${encodeURIComponent(file.name)}" style="max-width:100%;">`;
+      else if (["txt","md","js","html"].includes(file.type))
+        html += `<pre style="background:#f8f8f8;padding:1em;border-radius:5px;">(File content...)</pre>`;
+      else
+        html += `<p>No inline preview available. <i class="fa-solid fa-file"></i></p>`;
+      showPreview(html);
+    }
+    function editFile(name) {
+      let file = getCurrentFiles().find(f => f.name === name);
+      if (!["txt","md","js","html"].includes(file.type)) {
+        showModal(`<p>Editing is only supported for text/code files in this demo.</p>`);
+        return;
+      }
+      showModal(`<h3>Edit: ${file.name}</h3>
+        <textarea style="width:100%;min-height:180px;">(File content...)</textarea>
+        <button style="margin-top:1em;" onclick="closeModal()">Save (Demo)</button>`);
+    }
+    function renameFile(name) {
+      let file = getCurrentFiles().find(f => f.name === name);
+      showModal(`<h3>Rename: ${file.name}</h3>
+        <input type="text" id="newNameInput" value="${file.name}">
+        <button style="margin-top:1em;" onclick="doRenameFile('${name}')">Rename</button>`);
+    }
+    function doRenameFile(oldName) {
+      let newName = document.getElementById("newNameInput").value.trim();
+      if (!newName) return;
+      let files = getCurrentFiles();
+      let file = files.find(f => f.name === oldName);
+      file.name = newName;
+      closeModal();
+      renderFileTable();
+    }
+    function shareFile(name) {
+      showModal(`<h3>Share: ${name}</h3>
+        <p>Shareable Link:</p>
+        <input type="text" value="https://filemanager.example.com/share/${btoa(name)}" readonly style="width:100%;">
+        <label><input type="checkbox"> Public link (anyone with link)</label>
+        <label><input type="checkbox"> Set expiry date</label>
+        <button style="margin-top:1em;" onclick="closeModal()">Done</button>`);
+    }
+
+    // Toolbar: New Folder, Upload, Download, Delete, Move, Copy
+    document.getElementById("newFolderBtn").onclick = function() {
+      let folderName = prompt("Folder name:");
+      if (!folderName) return;
+      let files = getCurrentFiles();
+      files.push({name: folderName, type: "folder", size: "-", date: (new Date()).toISOString().slice(0,16).replace("T"," "), children: []});
+      renderFileTable();
+    };
+    document.getElementById("uploadInput").onchange = function(e) {
+      let files = Array.from(e.target.files);
+      if (!files.length) return;
+      let table = getCurrentFiles();
+      // Show progress bar (demo only)
+      let progressBar = document.getElementById("progressBar");
+      let fill = document.getElementById("progressBarFill");
+      progressBar.style.display = "block";
+      let uploaded = 0;
+      function nextUpload() {
+        if (uploaded >= files.length) {
+          progressBar.style.display = "none";
+          renderFileTable();
+          return;
+        }
+        fill.style.width = `${(uploaded+1)/files.length*100}%`;
+        fill.innerText = `${Math.round((uploaded+1)/files.length*100)}%`;
+        // Simulate upload
+        setTimeout(() => {
+          let file = files[uploaded];
+          table.push({
+            name: file.name,
+            type: file.name.split(".").pop(),
+            size: `${(file.size/1024/1024).toFixed(1)} MB`,
+            date: (new Date()).toISOString().slice(0,16).replace("T"," ")
+          });
+          uploaded++;
+          nextUpload();
+        }, 400);
+      }
+      nextUpload();
+    };
+    document.getElementById("downloadBtn").onclick = function() {
+      showModal(`<h3>Download</h3><p>This is a demo. In a real app, files would be zipped/downloaded.</p>`);
+    };
+    document.getElementById("deleteBtn").onclick = function() {
+      if (!confirm("Delete selected files/folders?")) return;
+      let files = getCurrentFiles();
+      for (let name of selected) {
+        let idx = files.findIndex(f => f.name === name);
+        if (idx !== -1) files.splice(idx,1);
+      }
+      selected.clear();
+      renderFileTable();
+      updateToolbar();
+    };
+    document.getElementById("moveBtn").onclick = function() {
+      showModal(`<h3>Move</h3><p>Move operation is a demo here. Batch move/copy is supported.</p>`);
+    };
+    document.getElementById("copyBtn").onclick = function() {
+      showModal(`<h3>Copy</h3><p>Copy operation is a demo here. Batch move/copy is supported.</p>`);
+    };
+
+    // Drag & drop upload (demo)
+    document.getElementById("mainContainer").ondragover = function(e) {
+      e.preventDefault();
+      this.style.background = "#e2eafc";
+    };
+    document.getElementById("mainContainer").ondragleave = function(e) {
+      this.style.background = "#fff";
+    };
+    document.getElementById("mainContainer").ondrop = function(e) {
+      e.preventDefault();
+      this.style.background = "#fff";
+      let files = Array.from(e.dataTransfer.files);
+      if (!files.length) return;
+      document.getElementById("uploadInput").files = e.dataTransfer.files;
+      document.getElementById("uploadInput").dispatchEvent(new Event('change'));
+    };
+
+    // ---------------- Modals & Preview -----------------
+    function showModal(html) {
+      document.getElementById("modalBody").innerHTML = html;
+      document.getElementById("modal").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+    function showPreview(html) {
+      document.getElementById("previewBody").innerHTML = html;
+      document.getElementById("previewModal").style.display = "flex";
+    }
+    function closePreview() {
+      document.getElementById("previewModal").style.display = "none";
+    }
+
+    // ------------- On Load: Session/User ---------------
+    window.onload = function() {
+      let saved = sessionStorage.getItem("filemgr_user");
+      if (saved) {
+        currentUser = JSON.parse(saved);
+        hideLogin();
+        initFileManager();
+      } else {
+        showLogin();
+      }
+    };
+
+    // --- Context menu (right-click) demo ---
+    document.getElementById("fileTableBody").addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+      let tr = e.target.closest("tr");
+      if (!tr) return;
+      let idx = Array.from(tr.parentNode.children).indexOf(tr);
+      let files = getCurrentFiles();
+      let file = files[idx];
+      showModal(`<h3>Context Menu for: ${file.name}</h3>
+        <ul style="padding-left:1.2em;">
+          <li><button onclick="previewFile('${file.name}')"><i class="fa fa-eye"></i> Preview</button></li>
+          <li><button onclick="editFile('${file.name}')"><i class="fa fa-pen"></i> Edit</button></li>
+          <li><button onclick="renameFile('${file.name}')"><i class="fa fa-i-cursor"></i> Rename</button></li>
+          <li><button onclick="shareFile('${file.name}')"><i class="fa fa-share"></i> Share</button></li>
+        </ul>`);
+    });
+
+    // --- Responsive: Hide modal on outside click ---
+    document.getElementById("modal").onclick = function(e) {
+      if (e.target === this) closeModal();
+    };
+    document.getElementById("previewModal").onclick = function(e) {
+      if (e.target === this) closePreview();
+    };
+  </script>
+</body>
+</html>
