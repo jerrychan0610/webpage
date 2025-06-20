@@ -23,14 +23,16 @@ FUNCTION
 - Rate Limiting & CAPTCHA: Prevent abuse and bots.
 Database
 -using mysql  database store all data
--data base : web-user-management
--mysql data base user name : admin
--mysql data base password : 815425
+-mysql data base : web-user-management
+-mysql user name : admin
+-mysql password : 815425
 Default :
--user name & password : admin / 815425
+-defaulte user name & password : admin / 815425
 Additional requirment:
--background colour : Dynamic background image;szie 1920x1080
 -log file
 -admin can manage all user, add user, del user, change user, suspen user, recover user
 -remark area showing create,modify,update date & time inside all files
 -remark area showing modify and update summary inside all files
+-embed a background image in my site
+-login box should place at middle on screen
+-real date and time place under login screen
