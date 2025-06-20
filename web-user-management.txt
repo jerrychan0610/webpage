@@ -31,3 +31,5 @@ Additional requirment:
 -background colour : Dynamic background image;szie 1920x1080
 -log file
 -admin can manage all user, add user, del user, change user, suspen user, recover user
+-show create,modify,update date & time inside all files remarks
+-show modify and update summary inside all files remarks
