@@ -28,6 +28,16 @@ Database
 -mysql password : 815425
 Default :
 -defaulte user name & password : admin / 815425
+USER DATABASE STRUCTURE
+-id (int, primary key)
+-username (varchar, unique)
+-email (varchar, unique)
+-phone (varchar, optional)
+-password_hash (varchar)
+-role (varchar)
+-is_active (tinyint/bool)
+-avatar (varchar, optional)
+-created_at (datetime)
 Additional requirment:
 -log file
 -admin can manage all user, add user, del user, change user, suspen user, recover user
