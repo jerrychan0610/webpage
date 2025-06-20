@@ -1,0 +1,28 @@
+﻿Project name: WEB USER MANAGEMENT
+FUNCTION
+🔐 Authentication & Authorization
+- User Registration: Allow users to sign up with email, phone, or social logins.
+- Login/Logout: Secure login with session or token-based authentication (e.g., JWT).
+- Password Management: Reset, change, and recover passwords securely.
+- Multi-Factor Authentication (MFA): Adds an extra layer of security.
+🧑‍💼 User Roles & Permissions
+- Role-Based Access Control (RBAC): Assign roles like admin, editor, viewer.
+- Permission Management: Define what each role can do (read, write, delete, etc.).
+- Granular Access Control: Limit access to specific resources or actions.
+🗂️ User Profile & Account Management
+- Profile Editing: Let users update their info (name, email, avatar, etc.).
+- Account Deactivation/Deletion: Comply with privacy laws like GDPR.
+- Activity Logs: Track user actions for auditing and security.
+🛠️ Admin Tools
+- User Dashboard: View, search, and manage users.
+- Bulk Actions: Activate, deactivate, or delete multiple users at once.
+- Analytics: Monitor user growth, engagement, and behavior.
+🌐 Integration & Security
+- Social Login: Google, Facebook, GitHub, etc.
+- OAuth2/OpenID Connect: For federated identity and SSO.
+- Rate Limiting & CAPTCHA: Prevent abuse and bots.
+Database
+-using mysql  database store all data
+Default :
+-user name & password : admin / admin
+
