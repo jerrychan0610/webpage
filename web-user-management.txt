@@ -23,6 +23,11 @@ FUNCTION
 - Rate Limiting & CAPTCHA: Prevent abuse and bots.
 Database
 -using mysql  database store all data
+-data base : web-user-management
+-data base user name and password : admin / 815425
 Default :
--user name & password : admin / admin
-
+-user name & password : admin / 815425
+Additional requirment:
+-background colour : Dynamic background image;szie 1920x1080
+-log file
+-admin can manage all user, add user, del user, change user, suspen user, recover user
