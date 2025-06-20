@@ -24,7 +24,8 @@ FUNCTION
 Database
 -using mysql  database store all data
 -data base : web-user-management
--data base user name and password : admin / 815425
+-mysql data base user name : admin
+-mysql data base password : 815425
 Default :
 -user name & password : admin / 815425
 Additional requirment:
